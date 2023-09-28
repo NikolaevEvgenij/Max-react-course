@@ -1,15 +1,30 @@
 import styles from "./HeaderCartButton.module.css";
 import CartIcon from "../Cart/CartIcon";
+import CartContext from "../../store/cart-context";
+import { useContext } from "react";
 
 const HeaderCartButton = (props) => {
+   const cartContext = useContext(CartContext);
+
+   const nuberOfCartMeals = cartContext.meals.reduce(
+      (curNumber, meal) => {
+         return (curNumber = curNumber + meal.amount);
+      }
+   );
+
    return (
-      <div className={styles.button}>
+      <button
+         className={styles.button}
+         onClick={props.openCart}
+      >
          <span className={styles.icon}>
             <CartIcon />
          </span>
          <span>YourCart</span>
-         <span className={styles.badge}>3</span>
-      </div>
+         <span className={styles.badge}>
+            {nuberOfCartMeals}
+         </span>
+      </button>
    );
 };
 

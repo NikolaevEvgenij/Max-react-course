@@ -8,10 +8,13 @@ const Header = (props) => {
       <>
          <header className={styles.header}>
             <h1>React Meals</h1>
-            <HeaderCartButton />
+            <HeaderCartButton openCart={props.openCart} />
          </header>
          <div className={styles.image}>
-            <img src={mealsImage} alt='A table full of meals' />
+            <img
+               src={mealsImage}
+               alt='A table full of meals'
+            />
          </div>
       </>
    );
