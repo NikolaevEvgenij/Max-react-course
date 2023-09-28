@@ -3,16 +3,72 @@ import { useReducer } from "react";
 import CartContext from "./cart-context";
 
 const defalutCartState = {
-   meals: [0],
+   meals: [],
    totalAmount: 0,
 };
 
 const cartReducer = (state, action) => {
    if (action.type === "ADD_MEAL") {
-      const updatedMeals = state.item.concat(action.meal);
       const updatedTotalAmount =
          state.totalAmount +
          action.meal.amount * action.meal.price;
+
+      const existingCartMealIndex = state.meals.findIndex(
+         (meal) => {
+            return meal.id === action.meal.id;
+         }
+      );
+
+      const existingCartMeal =
+         state.meals[existingCartMealIndex];
+
+      let updatedMeals;
+
+      if (existingCartMeal) {
+         const updatedMeal = {
+            ...existingCartMeal,
+            amount:
+               existingCartMeal.amount + action.meal.amount,
+         };
+         updatedMeals = [...state.meals];
+         updatedMeals[existingCartMealIndex] = updatedMeal;
+      } else {
+         updatedMeals = state.meals.concat(action.meal);
+      }
+      return {
+         meals: updatedMeals,
+         totalAmount: updatedTotalAmount,
+      };
+   }
+
+   if (action.type === "REMOVE_MEAL") {
+      const existingCartMealIndex = state.meals.findIndex(
+         (meal) => {
+            return meal.id === action.id;
+         }
+      );
+
+      const existingCartMeal =
+         state.meals[existingCartMealIndex];
+
+      let updatedMeals;
+
+      const updatedTotalAmount =
+         state.totalAmount - existingCartMeal.price;
+
+      if (existingCartMeal.amount !== 1) {
+         const updatedMeal = {
+            ...existingCartMeal,
+            amount: existingCartMeal.amount - 1,
+         };
+         updatedMeals = [...state.meals];
+         updatedMeals[existingCartMealIndex] = updatedMeal;
+      } else {
+         updatedMeals = state.meals.filter(
+            (meal) => meal.id !== action.id
+         );
+      }
+
       return {
          meals: updatedMeals,
          totalAmount: updatedTotalAmount,
@@ -43,11 +99,7 @@ const CartProvider = (props) => {
    };
 
    return (
-      <CartContext.Provider
-         value={cartContext}
-         addMeal={addMealToCart}
-         removeMeal={removeMealFromCart}
-      >
+      <CartContext.Provider value={cartContext}>
          {props.children}
       </CartContext.Provider>
    );
