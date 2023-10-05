@@ -1,68 +1,53 @@
-import React, {
-   useState,
-   useEffect,
-   useCallback,
-} from "react";
+import React from "react";
 
 import MoviesList from "./components/MoviesList";
 import AddMovie from "./components/AddMovie";
 import "./App.css";
+import useMovie from "./hooks/use-movie";
+import { useState } from "react";
+import { useCallback } from "react";
+import { useEffect } from "react";
 
 function App() {
    const [movies, setMovies] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
-   const [error, setError] = useState(null);
 
-   const fetchMoviesHandler = useCallback(async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-         const response = await fetch(
-            "https://react-http-3a5f3-default-rtdb.europe-west1.firebasedatabase.app/movies.json"
-         );
-         if (!response.ok) {
-            throw new Error("Something went wrong!");
-         }
-
-         const data = await response.json();
-
-         console.log(data);
-
-         const loadedMovies = [];
-         for (const key in data) {
-            loadedMovies.push({
-               id: key,
-               openingText: data[key].openingText,
-               releaseDate: data[key].releaseDate,
-               title: data[key].title,
-            });
-         }
-
-         setMovies(loadedMovies);
-      } catch (error) {
-         setError(error.message);
+   const transformMovies = (movies) => {
+      console.log(movies);
+      const loadedMovies = [];
+      for (const key in movies) {
+         loadedMovies.push({
+            id: key,
+            openingText: movies[key].openingText,
+            releaseDate: movies[key].releaseDate,
+            title: movies[key].title,
+         });
       }
-      setIsLoading(false);
-   }, []);
+      setMovies(loadedMovies);
+   };
 
+   console.log(movies);
+
+   const { sendRequest, error, isLoading } = useMovie();
    useEffect(() => {
-      fetchMoviesHandler();
-   }, [fetchMoviesHandler]);
+      sendRequest({
+         url: "https://react-http-3a5f3-default-rtdb.europe-west1.firebasedatabase.app/movies.json",
+         transformMovies,
+      });
+   }, [sendRequest, movies]);
 
-   async function addMovieHandler(movie) {
-      const response = await fetch(
-         "https://react-http-3a5f3-default-rtdb.europe-west1.firebasedatabase.app/movies.json",
-         {
+   const addMovieHandler = useCallback(
+      (movie) => {
+         sendRequest({
+            url: "https://react-http-3a5f3-default-rtdb.europe-west1.firebasedatabase.app/movies.json",
             method: "POST",
-            body: JSON.stringify(movie),
+            body: movie,
             headers: {
                "Content-Type": "application/json",
             },
-         }
-      );
-      const data = await response.json();
-      console.log(data);
-   }
+         });
+      },
+      [sendRequest]
+   );
 
    let content = <p>Found no movies.</p>;
 
@@ -84,7 +69,7 @@ function App() {
             <AddMovie onAddMovie={addMovieHandler} />
          </section>
          <section>
-            <button onClick={fetchMoviesHandler}>
+            <button onClick={sendRequest}>
                Fetch Movies
             </button>
          </section>

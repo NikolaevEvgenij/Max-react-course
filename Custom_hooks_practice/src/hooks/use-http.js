@@ -1,7 +1,6 @@
-import { useCallback } from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
-const useMovie = () => {
+const useHttp = () => {
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState(null);
 
@@ -26,20 +25,26 @@ const useMovie = () => {
             );
 
             if (!response.ok) {
-               throw new Error("Something went wrong!");
+               throw new Error("Request failed!");
             }
+
             const data = await response.json();
-            console.log(data);
             applyData(data);
-         } catch (error) {
-            setError(error.message);
+         } catch (err) {
+            setError(
+               err.message || "Something went wrong!"
+            );
          }
          setIsLoading(false);
       },
       []
    );
 
-   return { isLoading, error, sendRequest };
+   return {
+      isLoading,
+      error,
+      sendRequest,
+   };
 };
 
-export default useMovie;
+export default useHttp;
