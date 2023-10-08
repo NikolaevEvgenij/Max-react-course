@@ -1,32 +1,61 @@
-import { useState } from "react";
+import { useReducer } from "react";
 
 const useInput = (validateValue) => {
-   const [enteredValue, setEnteredValue] = useState("");
-   const [enteredValueIsTuched, setEnteredValueIsTuched] =
-      useState(false);
+   const initialInputState = {
+      value: "",
+      isTuched: false,
+   };
 
-   const enteredValueIsValid = validateValue(enteredValue);
+   const inputReduser = (state, action) => {
+      if (action.type === "VALUE") {
+         return {
+            value: action.value,
+            isTuched: state.isTuched,
+         };
+      }
+      if (action.type === "BLUR") {
+         return {
+            value: state.value,
+            isTuched: true,
+         };
+      }
+      if (action.type === "RESET") {
+         return { value: "", isTuched: false };
+      }
+      return initialInputState;
+   };
+
+   const [inputState, dispatch] = useReducer(
+      inputReduser,
+      initialInputState
+   );
+
+   const enteredValueIsValid = validateValue(
+      inputState.value
+   );
    const inputIsInvalid =
-      !enteredValueIsValid && enteredValueIsTuched;
+      !enteredValueIsValid && inputState.isTuched;
 
    const inputChangeHandler = (event) => {
-      setEnteredValue(event.target.value);
+      dispatch({
+         type: "VALUE",
+         value: event.target.value,
+      });
    };
 
    const inputBlurHandler = () => {
-      setEnteredValueIsTuched(true);
+      dispatch({ type: "BLUR" });
    };
    const formValueClasses = inputIsInvalid
       ? "form-control invalid"
       : "form-control ";
 
    const reset = () => {
-      setEnteredValue("");
-      setEnteredValueIsTuched("");
+      dispatch({ type: "RESET" });
    };
 
    return {
-      enteredValue,
+      enteredValue: inputState.value,
       enteredValueIsValid,
       inputIsInvalid,
       inputChangeHandler,
