@@ -70,33 +70,39 @@ const Checkout = (props) => {
 
    const cartContext = useContext(CartContext);
 
-   const {
-      sendRequest: submitOrder,
-      isLoading,
-      error,
-   } = useMeals();
+   const { sendRequest: submitOrder } = useMeals();
+
+   const dummyFn = (meals) => {
+      console.log(meals);
+   };
 
    const confirmHandler = (event) => {
       event.preventDefault();
+      props.submittingNow(true);
 
-      submitOrder({
-         url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/orders.json",
-         method: "POST",
-         Headers: {
-            "Content-Type": "application/json",
-         },
-         body: {
-            meals: cartContext.meals,
-            totalAmount: cartContext.totalAmount,
-            user: {
-               name: name,
-               number: number,
-               city: city,
-               postNumber: postalCode,
-               street: street,
+      submitOrder(
+         {
+            url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/orders.json",
+            method: "POST",
+            Headers: {
+               "Content-Type": "application/json",
+            },
+            body: {
+               meals: cartContext.meals,
+               totalAmount: cartContext.totalAmount,
+               user: {
+                  name: name,
+                  number: number,
+                  city: city,
+                  postNumber: postalCode,
+                  street: street,
+               },
             },
          },
-      });
+         dummyFn
+      );
+      props.submittingNow(false);
+      props.submitted(true);
 
       console.log(name, number);
       resetName();
@@ -105,124 +111,118 @@ const Checkout = (props) => {
       resetPostalCode();
       resetStreet();
       setFormIsDisabled(true);
-
-      // postCheck({
-      //    url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/checks.json",
-      //    method: "POST",
-      //    Headers: "application/json",
-      //    body: {
-      //       meals,
-      //       totalAmount,
-      //       user: {
-      //          name: name,
-      //          number:nunber,
-      //          city: city,
-      //          postNumber: postNumber,
-      //          street: street,
-      //       },
-      //    },
-      // });
    };
 
    return (
-      <form
-         className={styles.form}
-         onSubmit={confirmHandler}
-      >
-         <div
-            className={`${styles.control} ${
-               nameIsInvalid ? styles.invalid : ""
-            }`}
+      <>
+         <form
+            className={styles.form}
+            onSubmit={confirmHandler}
          >
-            <label htmlFor='name'>Your name</label>
-            <input
-               type='text'
-               id='name'
-               onChange={nameChangeHandler}
-               onBlur={nameBlurHandler}
-               value={name}
-            />
-            {nameIsInvalid && <p>Enter valid name!</p>}
-         </div>
-
-         <div
-            className={`${styles.control} ${
-               numberIsInvalid ? styles.invalid : ""
-            }`}
-         >
-            <label htmlFor='number'>Your number</label>
-            <input
-               type='text'
-               id='number'
-               onChange={numberChangeHandler}
-               onBlur={numberBlurHandler}
-               value={number}
-            />
-            {numberIsInvalid && <p>Enter valid number!</p>}
-         </div>
-
-         <div
-            className={`${styles.control} ${
-               cityIsInvalid ? styles.invalid : ""
-            }`}
-         >
-            <label htmlFor='city'>Your city</label>
-            <input
-               type='text'
-               id='city'
-               onChange={cityChangeHandler}
-               onBlur={cityBlurHandler}
-               value={city}
-            />
-            {cityIsInvalid && <p>Enter valid city!</p>}
-         </div>
-
-         <div
-            className={`${styles.control} ${
-               postalCodeIsInvalid ? styles.invalid : ""
-            }`}
-         >
-            <label htmlFor='code'>Your postal code</label>
-            <input
-               type='text'
-               id='code'
-               onChange={postalCodeChangeHandler}
-               onBlur={postalCodeBlurHandler}
-               value={postalCode}
-            />
-            {postalCodeIsInvalid && (
-               <p>Enter valid postal code!</p>
-            )}
-         </div>
-
-         <div
-            className={`${styles.control} ${
-               streetIsInvalid ? styles.invalid : ""
-            }`}
-         >
-            <label htmlFor='street'>Your street</label>
-            <input
-               type='text'
-               id='street'
-               onChange={streetChangeHandler}
-               onBlur={streetBlurHandler}
-               value={street}
-            />
-            {streetIsInvalid && <p>Enter valid street!</p>}
-         </div>
-
-         <div className={styles.actions}>
-            <button type='button' onClick={props.onCancel}>
-               Cancel
-            </button>
-            <button
-               className={styles.submit}
-               disabled={formIsDisabled}
+            <div
+               className={`${styles.control} ${
+                  nameIsInvalid ? styles.invalid : ""
+               }`}
             >
-               Confirm
-            </button>
-         </div>
-      </form>
+               <label htmlFor='name'>Your name</label>
+               <input
+                  type='text'
+                  id='name'
+                  onChange={nameChangeHandler}
+                  onBlur={nameBlurHandler}
+                  value={name}
+               />
+               {nameIsInvalid && <p>Enter valid name!</p>}
+            </div>
+
+            <div
+               className={`${styles.control} ${
+                  numberIsInvalid ? styles.invalid : ""
+               }`}
+            >
+               <label htmlFor='number'>Your number</label>
+               <input
+                  type='text'
+                  id='number'
+                  onChange={numberChangeHandler}
+                  onBlur={numberBlurHandler}
+                  value={number}
+               />
+               {numberIsInvalid && (
+                  <p>Enter valid number!</p>
+               )}
+            </div>
+
+            <div
+               className={`${styles.control} ${
+                  cityIsInvalid ? styles.invalid : ""
+               }`}
+            >
+               <label htmlFor='city'>Your city</label>
+               <input
+                  type='text'
+                  id='city'
+                  onChange={cityChangeHandler}
+                  onBlur={cityBlurHandler}
+                  value={city}
+               />
+               {cityIsInvalid && <p>Enter valid city!</p>}
+            </div>
+
+            <div
+               className={`${styles.control} ${
+                  postalCodeIsInvalid ? styles.invalid : ""
+               }`}
+            >
+               <label htmlFor='code'>
+                  Your postal code
+               </label>
+               <input
+                  type='text'
+                  id='code'
+                  onChange={postalCodeChangeHandler}
+                  onBlur={postalCodeBlurHandler}
+                  value={postalCode}
+               />
+               {postalCodeIsInvalid && (
+                  <p>Enter valid postal code!</p>
+               )}
+            </div>
+
+            <div
+               className={`${styles.control} ${
+                  streetIsInvalid ? styles.invalid : ""
+               }`}
+            >
+               <label htmlFor='street'>Your street</label>
+               <input
+                  type='text'
+                  id='street'
+                  onChange={streetChangeHandler}
+                  onBlur={streetBlurHandler}
+                  value={street}
+               />
+               {streetIsInvalid && (
+                  <p>Enter valid street!</p>
+               )}
+            </div>
+
+            <div className={styles.actions}>
+               <button
+                  type='button'
+                  onClick={props.onCancel}
+               >
+                  Cancel
+               </button>
+               <button
+                  className={styles.submit}
+                  disabled={formIsDisabled}
+               >
+                  Confirm
+               </button>
+            </div>
+         </form>
+      </>
    );
 };
 

@@ -8,6 +8,8 @@ import Checkout from "./Checkout";
 
 const Cart = (props) => {
    const [showForm, setShowForm] = useState(false);
+   const [isSubmitting, setIsSubmiting] = useState(false);
+   const [didSubmit, setDidSubmit] = useState(false);
 
    const cartContext = useContext(CartContext);
 
@@ -27,6 +29,14 @@ const Cart = (props) => {
 
    const showFormHandler = () => {
       setShowForm(true);
+   };
+
+   const submitOrderHandler = (value) => {
+      setIsSubmiting(value);
+   };
+
+   const didSubmitHandler = () => {
+      setDidSubmit(true);
    };
 
    const cartMeals = (
@@ -64,8 +74,9 @@ const Cart = (props) => {
          )}
       </div>
    );
-   return (
-      <Modal closeCart={props.closeCart}>
+
+   const cartModalContent = (
+      <>
          {cartMeals}
          <div className={styles.total}>
             <span>Total Amount</span>
@@ -73,9 +84,32 @@ const Cart = (props) => {
          </div>
 
          {showForm && (
-            <Checkout onCancel={props.closeCart} />
+            <Checkout
+               onCancel={props.closeCart}
+               submittingNow={submitOrderHandler}
+               submitted={didSubmitHandler}
+            />
          )}
          {!showForm && modalActions}
+      </>
+   );
+
+   const isSubmittingModalContent = (
+      <p>Submitting your order...</p>
+   );
+
+   const didSubmitModalContent = (
+      <p>
+         Thank you for your order! We will contact you soon
+         to confirm the order!
+      </p>
+   );
+
+   return (
+      <Modal closeCart={props.closeCart}>
+         {!isSubmitting && !didSubmit && cartModalContent}
+         {isSubmitting && isSubmittingModalContent}
+         {didSubmit && didSubmitModalContent}
       </Modal>
    );
 };
