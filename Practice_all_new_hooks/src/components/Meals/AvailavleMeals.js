@@ -26,7 +26,7 @@ const AvailableMeals = () => {
    useEffect(() => {
       sendRequest(
          {
-            url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/available-meals",
+            url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/available-meals.json",
          },
          fetchAvailableMeals
       );
