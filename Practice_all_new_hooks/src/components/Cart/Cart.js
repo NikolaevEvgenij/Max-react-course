@@ -31,8 +31,8 @@ const Cart = (props) => {
       setShowForm(true);
    };
 
-   const submitOrderHandler = (value) => {
-      setIsSubmiting(value);
+   const submitOrderHandler = (submitting) => {
+      setIsSubmiting(submitting);
    };
 
    const didSubmitHandler = () => {
@@ -86,8 +86,8 @@ const Cart = (props) => {
          {showForm && (
             <Checkout
                onCancel={props.closeCart}
-               submittingNow={submitOrderHandler}
-               submitted={didSubmitHandler}
+               submitOrder={submitOrderHandler}
+               didSubmit={didSubmitHandler}
             />
          )}
          {!showForm && modalActions}

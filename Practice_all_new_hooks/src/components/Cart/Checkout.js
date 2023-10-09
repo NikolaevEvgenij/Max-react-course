@@ -14,7 +14,6 @@ const Checkout = (props) => {
       inputIsInvalid: nameIsInvalid,
       inputChangeHandler: nameChangeHandler,
       inputBlurHandler: nameBlurHandler,
-      reset: resetName,
    } = useInput((name) => name !== "");
 
    const {
@@ -23,7 +22,6 @@ const Checkout = (props) => {
       inputIsInvalid: numberIsInvalid,
       inputChangeHandler: numberChangeHandler,
       inputBlurHandler: numberBlurHandler,
-      reset: resetNumber,
    } = useInput((number) => number !== "");
 
    const {
@@ -32,7 +30,6 @@ const Checkout = (props) => {
       inputIsInvalid: cityIsInvalid,
       inputChangeHandler: cityChangeHandler,
       inputBlurHandler: cityBlurHandler,
-      reset: resetCity,
    } = useInput((city) => city !== "");
    const {
       enteredValue: postalCode,
@@ -40,7 +37,6 @@ const Checkout = (props) => {
       inputIsInvalid: postalCodeIsInvalid,
       inputChangeHandler: postalCodeChangeHandler,
       inputBlurHandler: postalCodeBlurHandler,
-      reset: resetPostalCode,
    } = useInput(
       (postalCode) =>
          postalCode !== "" && postalCode.trim().length === 6
@@ -52,7 +48,6 @@ const Checkout = (props) => {
       inputIsInvalid: streetIsInvalid,
       inputChangeHandler: streetChangeHandler,
       inputBlurHandler: streetBlurHandler,
-      reset: resetStreet,
    } = useInput((street) => street !== "");
 
    const formIsValid =
@@ -74,12 +69,13 @@ const Checkout = (props) => {
 
    const dummyFn = (meals) => {
       console.log(meals);
+      props.submitOrder(false);
+      props.didSubmit(true);
    };
 
    const confirmHandler = (event) => {
       event.preventDefault();
-      props.submittingNow(true);
-
+      props.submitOrder(true);
       submitOrder(
          {
             url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/orders.json",
@@ -101,16 +97,6 @@ const Checkout = (props) => {
          },
          dummyFn
       );
-      props.submittingNow(false);
-      props.submitted(true);
-
-      console.log(name, number);
-      resetName();
-      resetNumber();
-      resetCity();
-      resetPostalCode();
-      resetStreet();
-      setFormIsDisabled(true);
    };
 
    return (
