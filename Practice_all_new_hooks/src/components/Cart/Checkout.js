@@ -60,50 +60,28 @@ const Checkout = (props) => {
    useEffect(() => {
       if (formIsValid) {
          setFormIsDisabled(false);
+         props.sendData({
+            name: name,
+            number: number,
+            city: city,
+            postNumber: postalCode,
+            street: street,
+         });
       }
-   }, [formIsValid]);
-
-   const cartContext = useContext(CartContext);
-
-   const { sendRequest: submitOrder } = useMeals();
-
-   const dummyFn = (meals) => {
-      console.log(meals);
-      props.submitOrder(false);
-      props.didSubmit(true);
-   };
-
-   const confirmHandler = (event) => {
-      event.preventDefault();
-      props.submitOrder(true);
-      submitOrder(
-         {
-            url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/orders.json",
-            method: "POST",
-            Headers: {
-               "Content-Type": "application/json",
-            },
-            body: {
-               meals: cartContext.meals,
-               totalAmount: cartContext.totalAmount,
-               user: {
-                  name: name,
-                  number: number,
-                  city: city,
-                  postNumber: postalCode,
-                  street: street,
-               },
-            },
-         },
-         dummyFn
-      );
-   };
+   }, [
+      formIsValid,
+      name,
+      number,
+      city,
+      postalCode,
+      street,
+   ]);
 
    return (
       <>
          <form
             className={styles.form}
-            onSubmit={confirmHandler}
+            onSubmit={props.onComfirm}
          >
             <div
                className={`${styles.control} ${

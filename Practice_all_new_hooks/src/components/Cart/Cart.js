@@ -5,11 +5,18 @@ import Modal from "../UI/Modal";
 import CartContext from "../../store/cart-context";
 import CartMeal from "./CartMeal";
 import Checkout from "./Checkout";
+import useMeals from "../hooks/useMeals";
 
 const Cart = (props) => {
    const [showForm, setShowForm] = useState(false);
-   const [isSubmitting, setIsSubmiting] = useState(false);
    const [didSubmit, setDidSubmit] = useState(false);
+   const [userData, setUserData] = useState({});
+
+   const {
+      sendRequest: submitOrder,
+      isLoading,
+      error,
+   } = useMeals();
 
    const cartContext = useContext(CartContext);
 
@@ -31,12 +38,36 @@ const Cart = (props) => {
       setShowForm(true);
    };
 
-   const submitOrderHandler = (submitting) => {
-      setIsSubmiting(submitting);
+   const getData = (user) => {
+      setUserData(user);
    };
 
-   const didSubmitHandler = () => {
-      setDidSubmit(true);
+   console.log(userData);
+
+   const didSubmitFn = (meals) => {
+      if (meals) {
+         setDidSubmit(true);
+         cartContext.clearCart();
+      }
+   };
+
+   const confirmHandler = (event) => {
+      event.preventDefault();
+      submitOrder(
+         {
+            url: "https://meals-app-5ca89-default-rtdb.firebaseio.com/orders.json",
+            method: "POST",
+            Headers: {
+               "Content-Type": "application/json",
+            },
+            body: {
+               meals: cartContext.meals,
+               totalAmount: cartContext.totalAmount,
+               user: userData,
+            },
+         },
+         didSubmitFn
+      );
    };
 
    const cartMeals = (
@@ -86,8 +117,8 @@ const Cart = (props) => {
          {showForm && (
             <Checkout
                onCancel={props.closeCart}
-               submitOrder={submitOrderHandler}
-               didSubmit={didSubmitHandler}
+               onComfirm={confirmHandler}
+               sendData={getData}
             />
          )}
          {!showForm && modalActions}
@@ -98,17 +129,45 @@ const Cart = (props) => {
       <p>Submitting your order...</p>
    );
 
+   const isSubmittingError = (
+      <>
+         <p>{error}</p>;
+         <div className={styles.actions}>
+            <button
+               onClick={props.closeCart}
+               className={styles.button}
+            >
+               Close
+            </button>
+         </div>
+      </>
+   );
+
    const didSubmitModalContent = (
-      <p>
-         Thank you for your order! We will contact you soon
-         to confirm the order!
-      </p>
+      <>
+         <p>
+            Thank you for your order! We will contact you
+            soon to confirm the order!
+         </p>
+         <div className={styles.actions}>
+            <button
+               onClick={props.closeCart}
+               className={styles.button}
+            >
+               Close
+            </button>
+         </div>
+      </>
    );
 
    return (
       <Modal closeCart={props.closeCart}>
-         {!isSubmitting && !didSubmit && cartModalContent}
-         {isSubmitting && isSubmittingModalContent}
+         {!isLoading &&
+            !didSubmit &&
+            !error &&
+            cartModalContent}
+         {isLoading && isSubmittingModalContent}
+         {error && isSubmittingError}
          {didSubmit && didSubmitModalContent}
       </Modal>
    );
