@@ -2,8 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
    showCart: false,
-   totalAmount: 0,
+   totalQuantity: 0,
    productsArray: [],
+   notification: null,
 };
 
 const cartSlice = createSlice({
@@ -14,7 +15,7 @@ const cartSlice = createSlice({
          state.showCart = !state.showCart;
       },
       addToCart(state, action) {
-         state.totalAmount++;
+         state.totalQuantity++;
 
          const currentProductIndex = state.productsArray.findIndex(
             (product) => {
@@ -25,12 +26,14 @@ const cartSlice = createSlice({
             state.productsArray[currentProductIndex];
          if (currentProduct) {
             currentProduct.quantity++;
+            currentProduct.total =
+               currentProduct.total + currentProduct.price;
          } else {
             state.productsArray.push(action.payload);
          }
       },
       removeFromCart(state, action) {
-         state.totalAmount--;
+         state.totalQuantity--;
 
          const currentProductIndex = state.productsArray.findIndex(
             (product) => {
@@ -42,9 +45,18 @@ const cartSlice = createSlice({
 
          if (currentProduct.quantity !== 1) {
             currentProduct.quantity--;
+            currentProduct.total =
+               currentProduct.total - currentProduct.price;
          } else {
             state.productsArray.splice(currentProductIndex, 1);
          }
+      },
+      showNotification(state, action) {
+         state.notification = {
+            status: action.payload.status,
+            title: action.payload.title,
+            message: action.payload.message,
+         };
       },
    },
 });

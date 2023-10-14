@@ -3,11 +3,13 @@ import classes from "./Products.module.css";
 
 const DUMMY_PRODUCTS = [
    {
+      id: Math.random().toFixed(7),
       title: "Marshmello",
       price: 6,
       description: "Soft and tasty!",
    },
    {
+      id: Math.random().toFixed(7),
       title: "Sprite",
       price: 2,
       description: "Refresh yourself!",
@@ -15,11 +17,10 @@ const DUMMY_PRODUCTS = [
 ];
 
 const productsContent = DUMMY_PRODUCTS.map((product) => {
-   const id = Math.random().toFixed(7);
    return (
       <ProductItem
-         key={id}
-         id={id}
+         key={product.id}
+         id={product.id}
          title={product.title}
          price={product.price}
          description={product.description}

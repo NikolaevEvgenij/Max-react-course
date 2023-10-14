@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { cartActions } from "../../store/cart";
 
 const CartButton = (props) => {
-   const totalAmount = useSelector((state) => state.totalAmount);
+   const totalQuantity = useSelector((state) => state.totalQuantity);
    const dispatch = useDispatch();
 
    const toggleCart = () => {
@@ -13,7 +13,7 @@ const CartButton = (props) => {
    return (
       <button className={classes.button} onClick={toggleCart}>
          <span>My Cart</span>
-         <span className={classes.badge}>{totalAmount}</span>
+         <span className={classes.badge}>{totalQuantity}</span>
       </button>
    );
 };
