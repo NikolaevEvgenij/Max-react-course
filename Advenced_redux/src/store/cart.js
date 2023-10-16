@@ -5,6 +5,7 @@ const initialState = {
    totalQuantity: 0,
    productsArray: [],
    notification: null,
+   changed: false,
 };
 
 const cartSlice = createSlice({
@@ -16,7 +17,7 @@ const cartSlice = createSlice({
       },
       addToCart(state, action) {
          state.totalQuantity++;
-
+         state.changed = true;
          const currentProductIndex = state.productsArray.findIndex(
             (product) => {
                return product.id === action.payload.id;
@@ -34,7 +35,7 @@ const cartSlice = createSlice({
       },
       removeFromCart(state, action) {
          state.totalQuantity--;
-
+         state.changed = true;
          const currentProductIndex = state.productsArray.findIndex(
             (product) => {
                return product.id === action.payload.id;
@@ -57,6 +58,10 @@ const cartSlice = createSlice({
             title: action.payload.title,
             message: action.payload.message,
          };
+      },
+      loadCart(state, action) {
+         state.productsArray = action.payload.productsArray;
+         state.totalQuantity = action.payload.totalQuantity;
       },
    },
 });

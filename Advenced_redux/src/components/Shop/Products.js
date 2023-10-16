@@ -3,13 +3,13 @@ import classes from "./Products.module.css";
 
 const DUMMY_PRODUCTS = [
    {
-      id: Math.random().toFixed(7),
+      id: "p1",
       title: "Marshmello",
       price: 6,
       description: "Soft and tasty!",
    },
    {
-      id: Math.random().toFixed(7),
+      id: "p2",
       title: "Sprite",
       price: 2,
       description: "Refresh yourself!",
