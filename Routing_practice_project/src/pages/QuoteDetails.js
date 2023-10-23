@@ -1,33 +1,66 @@
 import {
    Route,
    useParams,
+   Link,
+   useRouteMatch,
 } from "react-router-dom/cjs/react-router-dom";
 import HighlightedQuote from "../components/quotes/HighlightedQuote";
 import Comments from "../components/comments/Comments";
-
-const qoutesList = [
-   { id: "q1", author: "Evgenij", text: "Реакт - кайф!!" },
-   { id: "q2", author: "Evgenij", text: "Реакт - смысл жизни!" },
-];
+import useHttp from "../hooks/use-http";
+import { getSingleQuote } from "../lib/api";
+import { useEffect } from "react";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
 
 const QuoteDitails = () => {
+   const match = useRouteMatch();
    const qouteParams = useParams();
 
-   const currectQoute = qoutesList.find(
-      (quote) => qouteParams.quoteId === quote.id
-   );
+   const { quoteId } = qouteParams;
 
-   if (!currectQoute) {
-      return <p>No quote found!!</p>;
+   const {
+      data: loadedQuote,
+      status,
+      error,
+      sendRequest,
+   } = useHttp(getSingleQuote, true);
+
+   useEffect(() => {
+      sendRequest(quoteId);
+   }, [sendRequest, quoteId]);
+
+   if (status === "pending") {
+      return (
+         <div className='centered'>
+            <LoadingSpinner />
+         </div>
+      );
    }
 
+   if (error) {
+      return <div className='cerntered'>{error}</div>;
+   }
+
+   if (!loadedQuote.text) {
+      return <p>No quote found!!</p>;
+   }
    return (
       <>
          <HighlightedQuote
-            text={currectQoute.text}
-            author={currectQoute.author}
+            text={loadedQuote.text}
+            author={loadedQuote.author}
          />
-         <Route path={`/all-quotes/${qouteParams.quoteId}/comments`}>
+
+         <Route path={match.path} exact>
+            <div className='centered'>
+               <Link
+                  className='btn--flat'
+                  to={`${match.url}/comments`}
+               >
+                  Load Comments
+               </Link>
+            </div>
+         </Route>
+         <Route path={`${match.path}/comments`}>
             <Comments />
          </Route>
       </>
