@@ -5,8 +5,7 @@ import useMeals from "../hooks/useMeals";
 import useInput from "../hooks/useInput";
 
 const Checkout = (props) => {
-   const [formIsDisabled, setFormIsDisabled] =
-      useState(true);
+   const [formIsDisabled, setFormIsDisabled] = useState(true);
 
    const {
       enteredValue: name,
@@ -68,21 +67,11 @@ const Checkout = (props) => {
             street: street,
          });
       }
-   }, [
-      formIsValid,
-      name,
-      number,
-      city,
-      postalCode,
-      street,
-   ]);
+   }, [formIsValid, name, number, city, postalCode, street]);
 
    return (
       <>
-         <form
-            className={styles.form}
-            onSubmit={props.onComfirm}
-         >
+         <form className={styles.form} onSubmit={props.onComfirm}>
             <div
                className={`${styles.control} ${
                   nameIsInvalid ? styles.invalid : ""
@@ -112,9 +101,7 @@ const Checkout = (props) => {
                   onBlur={numberBlurHandler}
                   value={number}
                />
-               {numberIsInvalid && (
-                  <p>Enter valid number!</p>
-               )}
+               {numberIsInvalid && <p>Enter valid number!</p>}
             </div>
 
             <div
@@ -138,9 +125,7 @@ const Checkout = (props) => {
                   postalCodeIsInvalid ? styles.invalid : ""
                }`}
             >
-               <label htmlFor='code'>
-                  Your postal code
-               </label>
+               <label htmlFor='code'>Your postal code</label>
                <input
                   type='text'
                   id='code'
@@ -166,16 +151,11 @@ const Checkout = (props) => {
                   onBlur={streetBlurHandler}
                   value={street}
                />
-               {streetIsInvalid && (
-                  <p>Enter valid street!</p>
-               )}
+               {streetIsInvalid && <p>Enter valid street!</p>}
             </div>
 
             <div className={styles.actions}>
-               <button
-                  type='button'
-                  onClick={props.onCancel}
-               >
+               <button type='button' onClick={props.onCancel}>
                   Cancel
                </button>
                <button
