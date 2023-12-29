@@ -34,7 +34,7 @@ export default function EventDetails() {
       isError: eventIsError,
       error: eventError,
    } = useQuery({
-      queryKey: [{ id: id }],
+      queryKey: ["events", { id: id }],
       queryFn: ({ signal }) =>
          fetchEvent({ signal, id: id }),
    });
